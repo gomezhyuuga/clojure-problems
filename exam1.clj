@@ -49,11 +49,10 @@
   false."
   [x f lst]
   (loop [index 0 coll lst]
-    (if (empty? coll)
-      false
-      (if (f (first coll) x)
-        index
-        (recur (inc index) (rest coll))))))
+    (cond
+      (empty? coll)      false
+      (f (first coll) x) index
+      :else              (recur (inc index) (rest coll)))))
 
 ;==========================================================
 (deftest test-lcm
