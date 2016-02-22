@@ -32,6 +32,12 @@
   returns a new list that replicates n times each element contained in lst."
   [n lst]
   (mapcat (fn [el] (repeat n el)) lst))
+(defn expand
+  "Takes a list lst as its argument. It returns a list where the first element
+  of lst appears one time, the second elements appears two times, the third
+  element appears three times, and so on."
+  [lst]
+  (mapcat identity (map-indexed (fn [index item] (repeat (inc index) item)) lst)))
 
 (deftest test-positives
   (is (= () (positives '())))
@@ -59,4 +65,10 @@
   (is (= () (replic 0 '(a b c))))
   (is (= '(a a a) (replic 3 '(a))))
   (is (= '(1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4) (replic 4 '(1 2 3 4)))))
+(deftest test-expand
+  (is (= () (expand ())))
+  (is (= '(a) (expand '(a))))
+  (is (= '(1 2 2 3 3 3 4 4 4 4) (expand '(1 2 3 4))))
+  (is (= '(a b b c c c d d d d e e e e e) (expand '(a b c d e)))))
+
 (run-tests)
