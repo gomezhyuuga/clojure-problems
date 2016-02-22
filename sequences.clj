@@ -38,6 +38,11 @@
   element appears three times, and so on."
   [lst]
   (mapcat identity (map-indexed (fn [index item] (repeat (inc index) item)) lst)))
+(defn largest
+  "Takes as argument a nonempty list of numbers lst. It returns the largest
+  value contained in lst. Use the reduce function to solve this problem."
+  [lst]
+  (reduce (fn [a b] (if (> a b) a b)) lst))
 
 (deftest test-positives
   (is (= () (positives '())))
@@ -70,5 +75,10 @@
   (is (= '(a) (expand '(a))))
   (is (= '(1 2 2 3 3 3 4 4 4 4) (expand '(1 2 3 4))))
   (is (= '(a b b c c c d d d d e e e e e) (expand '(a b c d e)))))
+(deftest test-largest
+  (is (= 31 (largest '(31))))
+  (is (= 5 (largest '(1 2 3 4 5))))
+  (is (= -1 (largest '(-1 -2 -3 -4 -5))))
+  (is (= 52 (largest '(32 -1 45 12 -42 52 17 0 21 2)))))
 
 (run-tests)
