@@ -27,6 +27,12 @@
   [a b]
   (reduce * (repeat b a)))
 
+(defn replic
+  "takes two arguments: a list lst and an integer number n, where n ≥ 0. It
+  returns a new list that replicates n times each element contained in lst."
+  [n lst]
+  (mapcat (fn [el] (repeat n el)) lst))
+
 (deftest test-positives
   (is (= () (positives '())))
   (is (= () (positives '(-4 -1 -10 -13 -5))))
@@ -48,4 +54,9 @@
   (is (= 525.21875 (pow 3.5 5)))
   (is (= 129746337890625 (pow 15 12)))
   (is (= 3909821048582988049 (pow 7 22))))
+(deftest test-replic
+  (is (= () (replic 7 ())))
+  (is (= () (replic 0 '(a b c))))
+  (is (= '(a a a) (replic 3 '(a))))
+  (is (= '(1 1 1 1 2 2 2 2 3 3 3 3 4 4 4 4) (replic 4 '(1 2 3 4)))))
 (run-tests)
