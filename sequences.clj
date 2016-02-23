@@ -57,6 +57,19 @@
     ()
     (let [rotations (mod n (count lst))]
       (concat (drop rotations lst) (take rotations lst)))))
+(defn gcd
+  "Takes two positive integer arguments a and b as arguments, where a > 0 and b
+  > 0. It returns the greatest common divisor (GCD) of a and b."
+  [a b]
+    (let [n (min a b)]
+      (->>
+        (iterate (fn [[f, s, n]] [f, s, (dec n)]) [a, b, n])
+        (map (fn [[f, s, n]] [(+ (rem f n) (rem s n)), n]))
+        (drop-while (fn [[g, n]] (not (zero? g))))
+        first
+        second)))
+
+
 
 
 (deftest test-positives
@@ -117,5 +130,12 @@
   (is (= '(g a b c d e f) (rotate-left -8 '(a b c d e f g))))
   (is (= '(d e f g a b c) (rotate-left 45 '(a b c d e f g))))
   (is (= '(e f g a b c d) (rotate-left -45 '(a b c d e f g)))))
+(deftest test-gcd
+  (is (= 1 (gcd 13 7919)))
+  (is (= 4 (gcd 20 16)))
+  (is (= 6 (gcd 54 24)))
+  (is (= 7 (gcd 6307 1995)))
+  (is (= 12 (gcd 48 180)))
+  (is (= 14 (gcd 42 56))))
 
 (run-tests)
