@@ -43,6 +43,11 @@
   value contained in lst. Use the reduce function to solve this problem."
   [lst]
   (reduce (fn [a b] (if (> a b) a b)) lst))
+(defn drop-every
+  "Takes two arguments: an integer number n, where n ≥ 1, and a list lst. It
+  returns a new list that drops every n-th element from lst."
+  [n lst]
+  (remove list? (map-indexed (fn [index item] (if (not (zero? (rem (inc index) n))) item ())) lst)))
 
 (deftest test-positives
   (is (= () (positives '())))
@@ -80,5 +85,14 @@
   (is (= 5 (largest '(1 2 3 4 5))))
   (is (= -1 (largest '(-1 -2 -3 -4 -5))))
   (is (= 52 (largest '(32 -1 45 12 -42 52 17 0 21 2)))))
+(deftest test-drop-every
+  (is (= () (drop-every 5 ())))
+  (is (= '(1 2 3) (drop-every 4 '(1 2 3 4))))
+  (is (= '(1 3 5 7) (drop-every 2 '(1 2 3 4 5 6 7 8))))
+  (is (= '(1 3 5 7 9) (drop-every 2 '(1 2 3 4 5 6 7 8 9))))
+  (is (= '(a b d e g h j) (drop-every 3 '(a b c d e f g h i j))))
+  (is (= '(a b c d e f g h i j)
+         (drop-every 20 '(a b c d e f g h i j))))
+  (is (= () (drop-every 1 '(a b c d e f g h i j)))))
 
 (run-tests)
