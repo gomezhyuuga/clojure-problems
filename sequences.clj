@@ -48,6 +48,16 @@
   returns a new list that drops every n-th element from lst."
   [n lst]
   (remove list? (map-indexed (fn [index item] (if (not (zero? (rem (inc index) n))) item ())) lst)))
+(defn rotate-left
+  "Takes two arguments: an integer number n and a list lst. It returns the list
+  that results from rotating lst a total of n elements to the left. If n is
+  negative, it rotates to the right."
+  [n lst]
+  (if (empty? lst)
+    ()
+    (let [rotations (mod n (count lst))]
+      (concat (drop rotations lst) (take rotations lst)))))
+
 
 (deftest test-positives
   (is (= () (positives '())))
@@ -94,5 +104,18 @@
   (is (= '(a b c d e f g h i j)
          (drop-every 20 '(a b c d e f g h i j))))
   (is (= () (drop-every 1 '(a b c d e f g h i j)))))
+(deftest test-rotate-left
+  (is (= () (rotate-left 5 ())))
+  (is (= '(a b c d e f g) (rotate-left 0 '(a b c d e f g))))
+  (is (= '(b c d e f g a) (rotate-left 1 '(a b c d e f g))))
+  (is (= '(g a b c d e f) (rotate-left -1 '(a b c d e f g))))
+  (is (= '(d e f g a b c) (rotate-left 3 '(a b c d e f g))))
+  (is (= '(e f g a b c d) (rotate-left -3 '(a b c d e f g))))
+  (is (= '(a b c d e f g) (rotate-left 7 '(a b c d e f g))))
+  (is (= '(a b c d e f g) (rotate-left -7 '(a b c d e f g))))
+  (is (= '(b c d e f g a) (rotate-left 8 '(a b c d e f g))))
+  (is (= '(g a b c d e f) (rotate-left -8 '(a b c d e f g))))
+  (is (= '(d e f g a b c) (rotate-left 45 '(a b c d e f g))))
+  (is (= '(e f g a b c d) (rotate-left -45 '(a b c d e f g)))))
 
 (run-tests)
