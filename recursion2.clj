@@ -144,23 +144,16 @@
   are encoded as vectors [n e], where n is the number of duplicates of the
   element e"
   [lst]
-  (loop [res () coll lst counter 1]
-    (if (empty? coll)
-      (reverse res)
-      (if (= (first coll) (second coll))
-        (recur res (rest coll) (inc counter))
-        (recur (cons [counter (first coll)] res) (rest coll) 1)))))
+  (->>
+    (pack lst)
+    (map #(vector (count %) (first %)))))
 (defn encode-modified
   "Takes a list lst as its argument. It works the same as the previous problem,
   but if an element has no duplicates it is simply copied into the result list."
   [lst]
-  (loop [res () coll lst counter 1]
-    (if (empty? coll)
-      (reverse res)
-      (cond
-        (= (first coll) (second coll)) (recur res (rest coll) (inc counter))
-        (= counter 1) (recur (cons (first coll) res) (rest coll) 1)
-        :else (recur (cons [counter (first coll)] res) (rest coll) 1)))))
+  (->>
+    (encode lst)
+    (map (fn [[c, e]] (if (= c 1) e [c, e])))))
 (defn decode
   "Takes as its argument an encoded list lst that has the same structure as the
   resulting list from the previous problem. It returns the decoded version of lst."
