@@ -133,12 +133,7 @@
   "Takes a list lst as its argument. If lst contains consecutive repeated
   elements they should be placed in separate sublists."
   [lst]
-  (loop [res () coll lst packed ()]
-    (if (empty? coll)
-      (reverse res)
-        (if (= (first coll) (second coll))
-          (recur res (rest coll) (cons (first coll) packed))
-          (recur (cons (cons (first coll) packed) res) (rest coll) ())))))
+  (partition-by identity lst))
 (defn encode
   "Takes a list lst as its argument. Consecutive duplicates of elements in lst
   are encoded as vectors [n e], where n is the number of duplicates of the
