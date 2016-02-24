@@ -73,12 +73,10 @@
   list with all the possible ways in which x can be inserted into every position
   of lst"
   [x lst]
-  (let [times (count lst)]
-    (->>
-      (range 0 (inc times))
-      (map (fn [el]
-            (let [[t h] (split-at el lst)]
-              (concat t (list x) h)))))))
+  (->>
+    (range 0 (inc (count lst)))
+    (map #(let [[t h] (split-at % lst)]
+            (concat t (list x) h)))))
 
 (deftest test-positives
   (is (= () (positives '())))
