@@ -153,13 +153,9 @@
   "Takes as its argument an encoded list lst that has the same structure as the
   resulting list from the previous problem. It returns the decoded version of lst."
   [lst]
-  (loop [res () coll lst]
-    (if (empty? coll)
-      (reverse res)
-      (let [f (first coll)]
-        (if (vector? f)
-          (recur res (concat (take (first f) (repeat (second f))) (rest coll)))
-          (recur (cons f res) (rest coll)))))))
+  (mapcat (fn [x] (if (vector? x)
+                 (repeat (x 0) (x 1))
+                 (list x))) lst))
 ; TESTS
 (deftest test-my-repeat
   (is (= () (my-repeat 0 'x)))
