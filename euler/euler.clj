@@ -1,6 +1,7 @@
 (use 'clojure.test)
 ; HELPER functions
 (defn prime?
+  "Naive implementation for checking if a number n is prime or not."
   [n]
   (loop [i 2]
     (cond
@@ -8,25 +9,27 @@
       (= (rem n i) 0) false
       :else (recur (inc i)))))
 (defn primes
+  "Returns a lazy collection of prime numbers."
   []
-  (->>
-    (iterate inc 2)
-    (filter prime?)))
+  (filter prime? (iterate inc 2)))
 
 ; PROBLEM 1
-(defn multipliers
+(defn multiples
+  "Returns a lazy collection with all the multiples of a certain number."
   [n]
   (iterate #(+ n %) n))
-(defn multiples
+(defn euler-1
+  "Sums all the multiples of a and b below limit."
   [a b limit]
   (->> (range 1 limit)
     (filter #(or (zero? (mod % a)) (zero? (mod % b))))
     (reduce +)))
-(println "Multiples of 3 5 below 1000 = " (multiples 3 5 1000))
+(println "Multiples of 3 5 below 1000 = " (euler-1 3 5 1000))
 
 ; PROBLEM 2
 ; fibo function taken from the book
 (defn fibo
+  "Returns a lazy collection with all the fibonacci numbers."
   []
   (map first (iterate (fn [[l n]] [n (+ l n)]) [1N 2N])))
 (defn euler-2 [limit]
@@ -50,6 +53,7 @@
 ; PROBLEM 7
 ; NTH prime number
 (defn prime-nth
+  "Get the nth prime number."
   [n]
   (->>
     (primes)
@@ -57,6 +61,7 @@
     last))
 ; PROBLEM 10
 (defn sum-primes
+  "Sum all the prime numbers below limit."
   [limit]
   (->>
     (take-while #(< % limit) (primes))
@@ -73,8 +78,8 @@
   (is (= 29 (prime-factors 13195))))
 
 (deftest test-answers
-  (is (= 23 (multiples 3 5 10)))
-  (is (= 233168 (multiples 3 5 1000)))
+  (is (= 23 (euler-1 3 5 10)))
+  (is (= 233168 (euler-1 3 5 1000)))
   (is (= 4613732N (euler-2 4000000N))) ; ANSWER 1
   (is (= 104743 (prime-nth 10001))) ; EULER 7
   (is (= 17 (sum-primes 10)))
