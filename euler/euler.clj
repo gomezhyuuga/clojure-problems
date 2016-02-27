@@ -1,5 +1,12 @@
 (use 'clojure.test)
 ; HELPER functions
+(defn prime?
+  [n]
+  (loop [i 2]
+    (cond
+      (= i n) true
+      (= (rem n i) 0) false
+      :else (recur (inc i)))))
 (defn primes
   []
   (->>
@@ -32,13 +39,6 @@
 
 ; PROBLEM 3
 ; Largest prime factor of 600851475143
-(defn prime?
-  [n]
-  (loop [i 2]
-    (cond
-      (= i n) true
-      (= (rem n i) 0) false
-      :else (recur (inc i)))))
 (defn prime-factors
   [n]
   (->>
@@ -55,13 +55,14 @@
     (primes)
     (take n)
     last))
-
-; HELPER functions
-(defn primes
-  []
+; PROBLEM 10
+(defn sum-primes
+  [limit]
   (->>
-    (iterate inc 2)
-    (filter prime?)))
+    (take-while #(< % limit) (primes))
+    (reduce +)))
+; (println "Sum of primes below 2M = " (sum-primes 2000000))
+
 (deftest test-helpers
   (is (= true (prime? 2)))
   (is (= true (prime? 3)))
@@ -76,5 +77,6 @@
   (is (= 233168 (multiples 3 5 1000)))
   (is (= 4613732N (euler-2 4000000N))) ; ANSWER 1
   (is (= 104743 (prime-nth 10001))) ; EULER 7
+  (is (= 17 (sum-primes 10)))
 )
 (run-tests)
