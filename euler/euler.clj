@@ -35,14 +35,20 @@
 (defn prime-factors
   [n]
   (->>
-    (range 2 n)
-    (map (fn [el] [el (rem n el)]))
-    (filter (fn [[i, r]] (and (zero? r) (prime? i))))
-    (take-while (fn [[i, _]] (< i (Math/sqrt n))))
-    last
-    first))
+    (for [i (range 2 (Math/sqrt n)) :when (prime? i)] i)
+    (filter #(zero? (rem n %)))
+    last))
 (println "Largest prime factor of 13195 = " (prime-factors 13195))
-; (println "Largest prime factor of 600851475143 = " (prime-factors 600851475143))
+
+; PROBLEM 7
+; NTH prime number
+(defn prime-nth
+  [n]
+  (->>
+    (iterate inc 2)
+    (filter prime?)
+    (take n)
+    last))
 
 (deftest test-helpers
   (is (= true (prime? 2)))
@@ -50,10 +56,13 @@
   (is (= false (prime? 4)))
   (is (= true (prime? 19)))
   (is (= true (prime? 29)))
-  (is (= false (prime? 30))))
+  (is (= false (prime? 30)))
+  (is (= 29 (prime-factors 13195))))
 
 (deftest test-answers
   (is (= 23 (multiples 3 5 10)))
   (is (= 233168 (multiples 3 5 1000)))
-  (is (= 4613732N (euler-2 4000000N)))) ; ANSWER 1
+  (is (= 4613732N (euler-2 4000000N))) ; ANSWER 1
+  (is (= 104743 (prime-nth 10001))) ; EULER 7
+)
 (run-tests)
