@@ -45,11 +45,16 @@
 (defn prime-nth
   [n]
   (->>
-    (iterate inc 2)
-    (filter prime?)
+    (primes)
     (take n)
     last))
 
+; HELPER functions
+(defn primes
+  []
+  (->>
+    (iterate inc 2)
+    (filter prime?)))
 (deftest test-helpers
   (is (= true (prime? 2)))
   (is (= true (prime? 3)))
