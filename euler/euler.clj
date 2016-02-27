@@ -1,4 +1,11 @@
 (use 'clojure.test)
+; HELPER functions
+(defn primes
+  []
+  (->>
+    (iterate inc 2)
+    (filter prime?)))
+
 ; PROBLEM 1
 (defn multipliers
   [n]
