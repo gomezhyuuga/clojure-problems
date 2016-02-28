@@ -120,12 +120,27 @@
         :when (and (< a b c)
                 (= (* c c) (+ (* a a) (* b b))))]
     [a b c]))
+; TODO: optimize
 (defn euler-9
   []
   (->>
     (pythagorean-triplet 900)
     (filter (fn [[a b c]] (= 1000 (+ a b c))))))
 (println "Pythagorean triplet for which a + b + c = 1000, is " (euler-9))
+
+; EULER 5
+(defn euler-5-example
+  [limit]
+  (let [numbers (range 1 limit)]
+    (->>
+      (iterate inc limit)
+      (map (fn [el]
+             [el (every? #(zero? (rem el %)) numbers)]))
+      (drop-while (fn [[n, t]] (false? t)))
+      first
+      first)))
+(println "Smallest number that can be divided by each N in 1-10 = " (euler-5-example 11))
+(println "Smallest number that is evenly divisible by each N in 1-20 = " (euler-5-example 21))
 
 (deftest test-helpers
   (is (= true (prime? 2)))
@@ -147,5 +162,6 @@
   (is (= 2640 (euler-6 10)) "EULER 6 EXAMPLE")
   (is (= 25164150 (euler-6 100)) "EULER 6") ; EULER 6
   (is (= 31875000 (euler-9)) "EULER 9") ; EULER 9
+  (is (= 232792560 (euler05)) "EULER 5") ; EULER 5
 )
 ; (run-tests)
