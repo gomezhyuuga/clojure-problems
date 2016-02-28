@@ -68,6 +68,32 @@
     (reduce +)))
 ; (println "Sum of primes below 2M = " (sum-primes 2000000))
 
+; EULER PROBLEM 4
+(defn palindrome?
+  [s]
+  (let [size (count s)
+        half (quot size 2)]
+    (if (= size 1)
+      true
+      (->>
+        (for [i (range 0 half)
+              :while (= (nth s i) (nth s (- (dec size) i)))] i)
+        last
+        (= (dec half))))))
+(defn largest
+  "Takes as argument a nonempty list of numbers lst. It returns the largest
+  value contained in lst. Use the reduce function to solve this problem."
+  [lst]
+  (reduce (fn [a b] (if (> a b) a b)) lst))
+(defn palindrome-product
+  [a b]
+  (->>
+    (for [i (reverse (range a b)) j (range a b)] (* i j))
+    (filter (fn [el] (palindrome? (str el))))
+    largest))
+(println "Largest palindrome of two digits = " (palindrome-product 10 100))
+(println "Largest palindrome of three-digits = " (palindrome-product 100 1000))
+
 (deftest test-helpers
   (is (= true (prime? 2)))
   (is (= true (prime? 3)))
@@ -78,10 +104,12 @@
   (is (= 29 (prime-factors 13195))))
 
 (deftest test-answers
-  (is (= 23 (euler-1 3 5 10)))
-  (is (= 233168 (euler-1 3 5 1000)))
-  (is (= 4613732N (euler-2 4000000N))) ; ANSWER 1
-  (is (= 104743 (prime-nth 10001))) ; EULER 7
-  (is (= 17 (sum-primes 10)))
+  (is (= 23 (euler-1 3 5 10)) "EULER 1 EXAMPLE")
+  (is (= 233168 (euler-1 3 5 1000)) "EULER 1")
+  (is (= 4613732N (euler-2 4000000N)) "EULER 2") ; ANSWER 1
+  (is (= 104743 (prime-nth 10001)) "EULER 7") ; EULER 7
+  (is (= 17 (sum-primes 10)) "EULER 10 EXAMPLE")
+  (is (= 9009 (palindrome-product 10 100)) "EULER 4 EXAMPLE")
+  (is (= 906609 (palindrome-product 100 1000)) "EULER 4") ; EULER 4
 )
 (run-tests)
