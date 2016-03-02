@@ -45,16 +45,6 @@
     (reduce +)))
 (println "Sum of fibo even < four million = " (euler-2 4000000N))
 
-; PROBLEM 3
-; Largest prime factor of 600851475143
-(defn prime-factors
-  [n]
-  (->>
-    (for [i (range 2 (Math/sqrt n)) :when (prime? i)] i)
-    (filter #(zero? (rem n %)))
-    last))
-(println "Largest prime factor of 13195 = " (prime-factors 13195))
-
 ; PROBLEM 7
 ; NTH prime number
 (defn prime-nth
