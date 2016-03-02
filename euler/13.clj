@@ -1,6 +1,14 @@
-(ns rescue.core
-  (:require [clojure.java.io :as io] ))
+(defn openfile
+  []
+  (with-open [rdr (clojure.java.io/reader "bignum.txt")]
+    (reduce conj [] (line-seq rdr))))
 
-(def data (io/resource "bignum.txt"))
-
-(println (slurp data))
+(defn sum
+  []
+  (->>
+    (openfile)
+    (map bigint)
+    (reduce +)
+    str
+    (take 10)))
+(println (sum))
