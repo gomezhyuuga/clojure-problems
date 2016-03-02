@@ -116,23 +116,6 @@
 (println "Sum square difference w/ limit 10 = " (euler-6 10))
 (println "Sum square difference w/ limit 100 = " (euler-6 100))
 
-; EULER 9
-(defn pythagorean-triplet
-  [limit]
-  (for [a (range 1 limit)
-        b (range 1 limit)
-        c (range 1 limit)
-        :when (and (< a b c)
-                (= (* c c) (+ (* a a) (* b b))))]
-    [a b c]))
-; TODO: optimize
-(defn euler-9
-  []
-  (->>
-    (pythagorean-triplet 900)
-    (filter (fn [[a b c]] (= 1000 (+ a b c))))))
-(println "Pythagorean triplet for which a + b + c = 1000, is " (euler-9))
-
 ; EULER 5
 (defn euler-5-example
   [limit]
@@ -220,7 +203,6 @@
   (is (= 906609 (palindrome-product 100 1000)) "EULER 4") ; EULER 4
   (is (= 2640 (euler-6 10)) "EULER 6 EXAMPLE")
   (is (= 25164150 (euler-6 100)) "EULER 6") ; EULER 6
-  (is (= 31875000 (euler-9)) "EULER 9") ; EULER 9
   (is (= 232792560 (euler-5)) "EULER 5") ; EULER 5
 )
 ; (run-tests)
