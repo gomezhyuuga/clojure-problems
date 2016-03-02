@@ -1,5 +1,10 @@
 (use 'clojure.test)
 ; HELPER functions
+(defn pow
+  [a b]
+  (->>
+    (repeat b a)
+    (reduce *)))
 (defn prime?
   "Naive implementation for checking if a number n is prime or not."
   [n]
@@ -142,6 +147,60 @@
 (println "Smallest number that can be divided by each N in 1-10 = " (euler-5-example 11))
 (println "Smallest number that is evenly divisible by each N in 1-20 = " (euler-5-example 21))
 
+; EULER 48
+(defn euler-48
+  [limit]
+  (->>
+    (range 1N (inc limit))
+    (map #(pow % %))
+    (reduce +)
+    str
+    reverse))
+(println "Euler 48 EX = " (euler-48 10))
+(println "Euler 48 = " (reverse (take 10 (euler-48 1000))))
+
+; EULER 17
+(defn element-to-word
+  "Returns the readable word representation of a number."
+  [n]
+  (condp = n
+    1 "one"
+    2 "two"
+    3 "three"
+    4 "four"
+    5 "five"
+    6 "six"
+    7 "seven"
+    8 "eight"
+    9 "nine"
+    10 "ten"
+    11 "eleven"
+    12 "twelve"
+    13 "thirteen"
+    14 "fourteen"
+    15 "fifteen"
+    16 "sixteen"
+    17 "seventeen"
+    18 "eighteen"
+    19 "nineteen"
+    20 "twenty"
+    30 "thirty"
+    40 "forty"
+    50 "fifty"
+    60 "sixty"
+    70 "seventy"
+    80 "eighty"
+    90 "ninety"))
+(defn number-to-word
+  [n]
+  (let [thousands (quot n 1000)
+        trem      (rem n 1000)
+        hundreds  (quot trem 100)
+        hrem      (rem n 100)
+        dozens    (quot n 10)])
+  [
+   ])
+
 (deftest test-helpers
   (is (= true (prime? 2)))
   (is (= true (prime? 3)))
@@ -162,6 +221,6 @@
   (is (= 2640 (euler-6 10)) "EULER 6 EXAMPLE")
   (is (= 25164150 (euler-6 100)) "EULER 6") ; EULER 6
   (is (= 31875000 (euler-9)) "EULER 9") ; EULER 9
-  (is (= 232792560 (euler05)) "EULER 5") ; EULER 5
+  (is (= 232792560 (euler-5)) "EULER 5") ; EULER 5
 )
 ; (run-tests)
