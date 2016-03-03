@@ -1,3 +1,6 @@
+; PROBLEM 10
+; RESULT = 142913828922
+; CODE:
 (declare prime? primes)
 (defn prime?
   "Naive implementation for checking if a number n is prime or not."
