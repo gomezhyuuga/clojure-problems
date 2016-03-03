@@ -1,5 +1,6 @@
-(use 'clojure.test)
-
+; PROBLEM 20
+; RESULT = 684
+; CODE:
 (defn factorial
   [n]
   (reduce * (take n (iterate inc 1N))))
@@ -16,4 +17,3 @@
 
 (println "Sum of 100! = " (sum-digits (factorial 100N)))
 
-; (run-tests)
