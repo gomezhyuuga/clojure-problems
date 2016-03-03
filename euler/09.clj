@@ -1,6 +1,6 @@
-(use 'clojure.test)
-
-; EULER 9
+; PROBLEM 9
+; RESULT = 31875000
+; CODE:
 (defn pythagorean-triplet
   [limit]
   (for [a (range 1 limit)
@@ -14,9 +14,7 @@
   []
   (->>
     (pythagorean-triplet 900)
-    (filter (fn [[a b c]] (= 1000 (+ a b c))))))
+    (filter (fn [[a b c]] (= 1000 (+ a b c))))
+    (map #(vector % (reduce * %)))))
 (time (println "Pythagorean triplet for which a + b + c = 1000, is " (euler-9)))
 
-(deftest test-euler-9
-  (is (= 31875000 (reduce * (euler-9)))))
-(run-tests)
