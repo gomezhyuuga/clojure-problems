@@ -1,4 +1,5 @@
 ; PROBLEM 3
+; RESULT = 6857
 ; Largest prime factor of 600851475143
 (defn prime?
   "Naive implementation for checking if a number n is prime or not."
