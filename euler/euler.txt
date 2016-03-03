@@ -1,6 +1,251 @@
 Name & SID: Fernando Gómez Herrera A01020319
 Euler username: gomezhyuuga
-Problems solved: XX
+Problems solved: 11
+; PROBLEM 3
+; RESULT = 6857
+; Largest prime factor of 600851475143
+(defn prime?
+  "Naive implementation for checking if a number n is prime or not."
+  [n]
+  (loop [i 2]
+    (cond
+      (> i (Math/sqrt n)) true
+      (= (rem n i) 0) false
+      :else (recur (inc i)))))
+(defn primes
+  "Returns a lazy collection of prime numbers."
+  [limit]
+  (filter prime? (range 2 (inc limit))))
 
+(defn prime-factors
+  [n]
+  (let [factors (primes n)]
+    (->>
+      (filter #(zero? (rem n %)) factors)
+      last)))
+(defn factors
+  [n]
+  (loop [largest 2 i 2]
+    (if (> i (Math/sqrt n))
+      largest
+      (if (and (prime? i) (zero? (rem n i)))
+        (recur i (inc i))
+        (recur largest (inc i))))))
 
+(println "Largest prime factor of 13195 = " (factors 13195))
+(time
+(println "Largest prime factor of 13195 = " (factors 600851475143)))
 
+; PROBLEM 4
+; RESULT = 906609
+; CODE:
+(defn palindrome?
+  [s]
+  (let [size (count s)
+        half (quot size 2)]
+    (if (= size 1)
+      true
+      (->>
+        (for [i (range 0 half)
+              :while (= (nth s i) (nth s (- (dec size) i)))] i)
+        last
+        (= (dec half))))))
+(defn largest
+  "Takes as argument a nonempty list of numbers lst. It returns the largest
+  value contained in lst. Use the reduce function to solve this problem."
+  [lst]
+  (reduce (fn [a b] (if (> a b) a b)) lst))
+(defn palindrome-product
+  [a b]
+  (->>
+    (for [i (reverse (range a b)) j (range a b)] (* i j))
+    (filter (fn [el] (palindrome? (str el))))
+    largest))
+(println "Largest palindrome of two digits = " (palindrome-product 10 100))
+(println "Largest palindrome of three-digits = " (palindrome-product 100 1000))
+; PROBLEM 5
+; RESULT = 232792560
+; CODE:
+(defn euler-5
+  [limit]
+  (let [numbers (range 1 limit)]
+    (->>
+      (iterate inc limit)
+      (map (fn [el]
+             [el (every? #(zero? (rem el %)) numbers)]))
+      (drop-while (fn [[n, t]] (false? t)))
+      first
+      first)))
+(println "Smallest number that can be divided by each N in 1-10 = " (euler-5 11))
+(println "Smallest number that is evenly divisible by each N in 1-20 = " (euler-5 21))
+; PROBLEM 6
+; RESULT = 25164150
+; CODE:
+(defn square-of-sum
+  [limit]
+  (let [sum (reduce + (range 1 (inc limit)))]
+    (* sum sum)))
+(defn sum-of-squares
+  [limit]
+  (->>
+    (range 1 (inc limit))
+    (map #(* % %))
+    (reduce +)))
+(defn euler-6
+  [limit]
+  (- (square-of-sum limit) (sum-of-squares limit)))
+(println "Sum square difference w/ limit 10 = " (euler-6 10))
+(println "Sum square difference w/ limit 100 = " (euler-6 100))
+; PROBLEM 7
+; RESULT = 104743
+; NTH prime number
+(defn prime?
+  "Naive implementation for checking if a number n is prime or not."
+  [n]
+  (loop [i 2]
+    (cond
+      (> i (Math/sqrt n)) true
+      (= (rem n i) 0) false
+      :else (recur (inc i)))))
+(defn primes
+  "Returns a lazy collection of prime numbers."
+  []
+  (filter prime? (iterate inc 2)))
+(defn prime-nth
+  "Get the nth prime number."
+  [n]
+  (nth (primes) (dec n)))
+
+(println "6th prime =" (prime-nth 6))
+(println "1001th prime =" (prime-nth 10001))
+; PROBLEM 8
+; RESULT = 23514624000
+; CODE:
+(defn openfile
+  [filename]
+  (with-open [rdr (clojure.java.io/reader filename)]
+    (reduce conj [] (line-seq rdr))))
+
+(defn number
+  [n]
+  (->>
+    (openfile "08.txt")
+    (reduce str)))
+
+(defn product
+  [s]
+  (->>
+    (map #(Character/digit % 10) s)
+    (reduce *)))
+
+(defn check
+  [n]
+  (->>
+    (number n)
+    (partition n 1)
+    (sort #(compare (str %1) (str %2)))
+    (map #(vector % (product %)))
+    (sort #(compare (%1 1) (%2 1)))
+    last))
+
+(println (check 4))
+(println (check 13))
+; PROBLEM 9
+; RESULT = 31875000
+; CODE:
+(defn pythagorean-triplet
+  [limit]
+  (for [a (range 1 limit)
+        b (range 1 limit)
+        c (range 1 limit)
+        :when (and (< a b c)
+                (= (* c c) (+ (* a a) (* b b))))]
+    [a b c]))
+; TODO: optimize
+(defn euler-9
+  []
+  (->>
+    (pythagorean-triplet 900)
+    (filter (fn [[a b c]] (= 1000 (+ a b c))))
+    (map #(vector % (reduce * %)))))
+(time (println "Pythagorean triplet for which a + b + c = 1000, is " (euler-9)))
+
+; PROBLEM 10
+; RESULT = 142913828922
+; CODE:
+(declare prime? primes)
+(defn prime?
+  "Naive implementation for checking if a number n is prime or not."
+  [n]
+  (loop [i 2]
+    (cond
+      (> i (Math/sqrt n)) true
+      (= (rem n i) 0) false
+      :else (recur (inc i)))))
+(defn primes
+  "Returns a lazy collection of prime numbers."
+  [limit]
+  (filter prime? (range 2 (inc limit))))
+
+(defn sum-of-primes
+  [limit]
+  (reduce + (take-while #(< % limit) (primes limit))))
+
+(println "Sum of primes below 10 =" (sum-of-primes 10))
+(println "Sum of primes below 2 million =" (sum-of-primes 2000000))
+
+; PROBLEM 13
+; RESULT = 5537376230
+; CODE:
+(defn openfile
+  []
+  (with-open [rdr (clojure.java.io/reader "bignum.txt")]
+    (reduce conj [] (line-seq rdr))))
+
+(defn sum
+  []
+  (->>
+    (openfile)
+    (map bigint)
+    (reduce +)
+    str
+    (take 10)
+    (reduce str)))
+(println (sum))
+; PROBLEM 20
+; RESULT = 684
+; CODE:
+(defn factorial
+  [n]
+  (reduce * (take n (iterate inc 1N))))
+
+(defn sum-digits
+  [n]
+  (->>
+    (str n)
+    (map #(bigint (Character/digit % 10)))
+    (reduce +)))
+
+(println "10! = " (factorial 10N))
+(println "Sum of digits 10! = " (sum-digits (factorial 10N)))
+
+(println "Sum of 100! = " (sum-digits (factorial 100N)))
+
+; PROBLEM 48
+; RESULT = 9110846700
+; CODE:
+(defn pow
+  [a b]
+  (->>
+    (repeat b a)
+    (reduce *)))
+(defn euler-48
+  [limit]
+  (->>
+    (range 1N (inc limit))
+    (map #(pow % %))
+    (reduce +)
+    str
+    reverse
+    (reduce str)))
+(println "Euler 48 = " (reduce str (reverse (take 10 (euler-48 1000)))))
