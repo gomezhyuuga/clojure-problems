@@ -1,3 +1,6 @@
+; PROBLEM 13
+; RESULT = 5537376230
+; CODE:
 (defn openfile
   []
   (with-open [rdr (clojure.java.io/reader "bignum.txt")]
@@ -10,5 +13,6 @@
     (map bigint)
     (reduce +)
     str
-    (take 10)))
+    (take 10)
+    (reduce str)))
 (println (sum))
