@@ -5,13 +5,23 @@
 (use 'clojure.test)
 
 ;==========================================================
+(defn area
+  [d]
+  (/ (* 3.1416 (* d d)) 4))
+(defn cost-per-inch
+  [[d p]]
+  [d (/ (area d) p)])
 (defn pizza
   "Takes a list of vectors lst. Each vector contains two
   integers respectively designating a pizza's diameter d
   (in inches) and price p (in dollars). It returns the
   diameter d of the pizza with the best value."
   [lst]
-  nil)
+  (->>
+    (map cost-per-inch lst)
+    (sort-by (fn [x] (x 1)))
+    last
+    first))
 
 ;==========================================================
 (defrecord State [state-name abbreviation])
@@ -31,11 +41,27 @@
 (defmulti total
   "Multimethod that allows you to compute the total price,
   including tax, of a certain article in a certain state."
-  (fn [article state] nil))
+  (fn [article state]
+    (vector (class article) (:abbreviation state))))
 
 (defmethod total :default
   [article state]
   nil)
+
+(defmethod total [Cigarettes :CA] [article state] (+ (:price article) 0.87))
+(defmethod total [Cigarettes :OR] [article state] (+ (:price article) 1.18))
+(defmethod total [Cigarettes :TX] [article state] (+ (:price article) 1.41))
+
+(defmethod total [Gasoline :CA] [article state]
+  (+ (* (:price-per-gallon article) (:gallons article)) (* 0.46 (:gallons article))))
+(defmethod total [Gasoline :OR] [article state]
+  (+ (* (:price-per-gallon article) (:gallons article)) (* 0.25 (:gallons article))))
+(defmethod total [Gasoline :TX] [article state]
+  (+ (* (:price-per-gallon article) (:gallons article)) (* 0.20 (:gallons article))))
+
+(defmethod total [Item :CA] [article state] (* (:price article) 1.0825))
+(defmethod total [Item :OR] [article state] (:price article))
+(defmethod total [Item :TX] [article state] (* (:price article) 1.0625))
 
 ;==========================================================
 (deftest test-pizza
@@ -58,3 +84,4 @@
 
 ;==========================================================
 (run-tests)
+
