@@ -42,7 +42,7 @@
   "Multimethod that allows you to compute the total price,
   including tax, of a certain article in a certain state."
   (fn [article state]
-    (vector (class article) (:abbreviation state))))
+    [ (class article) (:abbreviation state) ]))
 
 (defmethod total :default
   [article state]
@@ -53,11 +53,11 @@
 (defmethod total [Cigarettes :TX] [article state] (+ (:price article) 1.41))
 
 (defmethod total [Gasoline :CA] [article state]
-  (+ (* (:price-per-gallon article) (:gallons article)) (* 0.46 (:gallons article))))
+  (* (:gallons article) (+ (:price-per-gallon article) 0.46)))
 (defmethod total [Gasoline :OR] [article state]
-  (+ (* (:price-per-gallon article) (:gallons article)) (* 0.25 (:gallons article))))
+  (* (:gallons article) (+ (:price-per-gallon article) 0.25)))
 (defmethod total [Gasoline :TX] [article state]
-  (+ (* (:price-per-gallon article) (:gallons article)) (* 0.20 (:gallons article))))
+  (* (:gallons article) (+ (:price-per-gallon article) 0.20)))
 
 (defmethod total [Item :CA] [article state] (* (:price article) 1.0825))
 (defmethod total [Item :OR] [article state] (:price article))
