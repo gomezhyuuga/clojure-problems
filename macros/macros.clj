@@ -5,6 +5,7 @@
 ;;;          A01020319 Fernando Gómez Herrera
 
 (ns macros)
+
 (defmacro my-or
   ([] nil)
   ([x] x)
@@ -25,8 +26,22 @@
        (do ~@exprs)
        (if (= ~eq ~cnd) (recur)))))
 
-(use 'clojure.test)
+(defmacro defn-curry
+  ([nam args & body]
+  (let [x   (first args)
+        els (rest args)]
+    (cond
+      (= 0 (count args)) `(defn ~nam []   (do ~@body))
+      (= 1 (count args)) `(defn ~nam [~x] (do ~@body))
+      :else              `(defn ~nam [~x] (curry ~body ~@els))))))
+(defmacro curry
+  ([body x]
+   `(fn [~x] (do ~@body)))
+  ([body x & more]
+   `(fn [~x] (curry ~body ~@more))))
 
+; TESTS
+(use 'clojure.test)
 (deftest test-my-or
   (is (= nil (my-or)))
   (is (= :one (my-or false :one nil :two false :three)))
@@ -48,4 +63,26 @@
                            (println @j)
                            (swap! j inc)
                            (:while (<= @j 5))))))))
+
+(deftest test-defn-curry
+  (do
+    (defn-curry sum [a b c d] (prn 'args a b c d) (+ a b c d))
+    (defn-curry go [x y] (* x (+ y 1)))
+    (defn-curry add1 [x] (+ x 1))
+    (defn-curry hello [] "hello")
+
+    (is (= "args 1 2 3 4\n"
+           (with-out-str
+             ((((sum 1) 2) 3) 4))))
+    (is (= 10 ((((sum 1) 2) 3) 4)))
+    (is (= "args 15 8 16 42\n"
+           (with-out-str
+             ((((sum 15) 8) 16) 42))))
+    (is (= 81 ((((sum 15) 8) 16) 42)))
+    (is (= 8 ((go 2) 3)))
+    (is (= 9 ((go 3) 2)))
+    (is (= 1 (add1 0)))
+    (is (= 42 (add1 41)))
+    (is (= "hello" (hello)))))
 (run-tests)
+
