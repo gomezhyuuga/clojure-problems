@@ -26,14 +26,21 @@
        (do ~@exprs)
        (if (= ~eq ~cnd) (recur)))))
 
+(defmacro def-pred
+  [nam arg & body]
+  (let [negated (symbol (str "not-" nam))]
+    `(do
+       (defn ~nam     ~arg ~@body)
+       (defn ~negated ~arg (not (do ~@body))))))
+
 (defmacro defn-curry
   ([nam args & body]
-  (let [x   (first args)
-        els (rest args)]
-    (cond
-      (= 0 (count args)) `(defn ~nam []   (do ~@body))
-      (= 1 (count args)) `(defn ~nam [~x] (do ~@body))
-      :else              `(defn ~nam [~x] (curry ~body ~@els))))))
+   (let [x   (first args)
+         els (rest args)]
+     (cond
+       (= 0 (count args)) `(defn ~nam []   (do ~@body))
+       (= 1 (count args)) `(defn ~nam [~x] (do ~@body))
+       :else              `(defn ~nam [~x] (curry ~body ~@els))))))
 (defmacro curry
   ([body x]
    `(fn [~x] (do ~@body)))
@@ -63,6 +70,18 @@
                            (println @j)
                            (swap! j inc)
                            (:while (<= @j 5))))))))
+(deftest test-def-pred
+  (do
+    (def-pred less-than-one? [x] (< x 1))
+    (def-pred plural? [s] (println "check s in" s) (= \s (last s)))
+    (is (= true (less-than-one? 0)))
+    (is (= false (less-than-one? 2)))
+    (is (= false (not-less-than-one? 0)))
+    (is (= true (not-less-than-one? 2)))
+    (is (= true (plural? "boys")))
+    (is (= false (plural? "girl")))
+    (is (= false (not-plural? "boys")))
+    (is (= true (not-plural? "girl")))))
 
 (deftest test-defn-curry
   (do
@@ -85,4 +104,3 @@
     (is (= 42 (add1 41)))
     (is (= "hello" (hello)))))
 (run-tests)
-
