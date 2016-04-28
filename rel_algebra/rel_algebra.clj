@@ -46,7 +46,9 @@
 (defn widest
   "Get the length of the widest elemenet as str in the list"
   [lst]
-  0)
+  (->>
+    (map #(count (str %)) lst)
+    (reduce max)))
 
 (defn relation
   "This factory function creates a new relation object, taking the data from a table contained in a CSV file. The relation object must be an instance of a record (created with defrecord) or type (created with deftype). The parameter file-name must be a keyword naming a file with a .csv extension contained in the current directory."
@@ -59,9 +61,10 @@
   (is
     (= '(1 3 "ok" "ok2" "2ok" "string" 2345)
        (convert '("1" "3" "ok" "ok2" "2ok" "string" "2345")))))
-(deftest test-wide
+(deftest test-widest
   (is (= 5 (widest '("a" "ab" "abc" "abcd" "abcde")))) ; 5 = abcde
   (is (= 3 (widest '("id" 1 2 12 20 300 22 111)))) ; 3 = 300 or 111
-  )
+  (is (= 16 (widest '("Gwen Stacy" "Natalia Romanova" "Tony Stark" "Peggy Carter"
+                            "Peter Parker" "Pepper Potts")))))
 
 (run-tests)
