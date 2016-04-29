@@ -10,6 +10,7 @@
   (:use clojure.test))
 
 ; UTILS
+(declare widest)
 (defrecord Relation
   [column-names rows])
 
@@ -27,23 +28,37 @@
   "Wraps a string in + sign"
   [wrapper data]
   (str wrapper data wrapper))
+(defn build-border
+  "Border for a formatted table"
+  [colSizes]
+  (->>
+    (map #(repeat (+ 2 %) "-") colSizes)
+    (map str/join)
+    (str/join "+")
+    (wrap-with "+")))
+(defn format-value
+  "Formats integer values right justified and other values left justified"
+  [value size]
+  (if (integer? value)
+    (format (str " %"  size "d ") value)
+    (format (str " %-" size "s ") value)))
 (defn build-row
   "Row formatted for a table"
   [colSizes data]
   (->>
-    (map-indexed #(format (str " %-" (nth colSizes %1) "s ") %2) data)
+    (map-indexed #(format-value %2 (nth colSizes %1)) data)
     (str/join "|")
     (wrap-with "|")))
 (defn build-header
   "Creates a table header"
-  [headers colSizes]
-  (let [border (->>
-                 (map #(repeat (+ 2 %) "-") colSizes)
-                 (map str/join)
-                 (str/join "+")
-                 (wrap-with "+"))
-        colNames (build-row colSizes headers)]
-    (str/join "\n" [border colNames border])))
+  [colSizes headers]
+  (build-row colSizes headers))
+(defn build-body
+  "Creates the body fo the table"
+  [colSizes rows]
+  (->>
+    (map #(build-row colSizes %) rows)
+    (str/join "\n")))
 
 (defn str-relation
   "Creates a string representation of a Relation, i.e. a table"
@@ -54,8 +69,11 @@
         all       (cons headers rows) ; All the rows (inc headers) in a single list
         colValues (map #(get-column % all) (range nCols)) ; List of column values
         colSizes  (map widest colValues) ; List with the sizes of each column
+        border    (build-border colSizes) ; Horizontal border of the table
+        fHeader   (build-header colSizes headers) ; Formatted header
+        fBody     (build-body colSizes rows)
         ]
-    (build-header headers colSizes)))
+    (str/join "\n" [border fHeader border fBody border])))
 
 
 (defn create-record
