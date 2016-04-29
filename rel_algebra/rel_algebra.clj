@@ -147,7 +147,12 @@
 (defn intersection
   "Returns a new relation object that contains the rows in relation-a that are also in relation-b."
   [relation-a relation-b]
-  (Relation. '() '()))
+  (let [rows-a (.rows relation-a)
+        rows-b (.rows relation-b)
+        header (.column-names relation-a)
+        rows   (filter #(find % rows-b) rows-a)]
+    (Relation. header rows)))
+
 (defn product
   "Returns a new relation object that contains the Cartesian product of relation-a times relation-b."
   [relation-a relation-b]
