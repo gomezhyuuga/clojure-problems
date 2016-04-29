@@ -5,10 +5,18 @@
 ;          A01020319 Fernando Gómez Herrera
 ;----------------------------------------------------------
 
-(ns rel-algebra
+(ns gh.rel-algebra
   (:require [clojure.string :as str])
   (:use clojure.test))
 
+(declare difference
+         intersection
+         product
+         project
+         relation
+         rename
+         select
+         union)
 ; UTILS
 (declare widest)
 (defrecord Relation

@@ -1,6 +1,8 @@
 ; Unit tests for the Relational Algebra DSL.
 
-(use 'clojure.test)
+(load-file "rel_algebra.clj")
+(ns gh.rel-algebra
+  (:use [clojure.test]))
 
 (def s1 (relation :students1))
 (def s2 (relation :students2))
