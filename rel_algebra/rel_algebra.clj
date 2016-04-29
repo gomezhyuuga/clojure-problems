@@ -33,6 +33,12 @@
   "Get values for the specified column"
   [index data]
   (map #(nth % index) data))
+(defn find
+  [el lst]
+  "Finds an item inside a list. Returns the record if it exists, nil otherwise."
+  (->>
+    (drop-while #(not= el %) lst)
+    first))
 (defn wrap-with
   "Wraps a string in + sign"
   [wrapper data]
@@ -133,34 +139,38 @@
 (defn difference
   "Returns a new relation object that contains the rows in relation-a that are not in relation-b."
   [relation-a relation-b]
-  (.Relation [] []))
+  (let [rows-a (.rows relation-a)
+        rows-b (.rows relation-b)
+        header (.column-names relation-a)
+        rows   (filter #(not (find % rows-b)) rows-a)]
+    (Relation. header rows)))
 (defn intersection
   "Returns a new relation object that contains the rows in relation-a that are also in relation-b."
   [relation-a relation-b]
-  (.Relation [] []))
+  (Relation. '() '()))
 (defn product
   "Returns a new relation object that contains the Cartesian product of relation-a times relation-b."
   [relation-a relation-b]
-  (.Relation [] []))
+  (Relation. '() '()))
 (defn project
   "Returns a new relation object based on relation but only with the columns specified in attribute-
   vector."
   [attribute-vector relation]
-  (.Relation [] []))
+  (Relation. '() '()))
 (defn rename
   "Returns a new relation object which has the same rows as relation but with all its columns
   renamed using the names contained in attribute-vector.
   The attribute names must be unique keywords in attribute-vector. The number of attributes in
   attribute-vector must be the same as the number of columns in relation."
   [attribute-vector relation]
-  (.Relation [] []))
+  (Relation. '() '()))
 (defmacro select
   "This operation has to be implemented as a macro. It returns a new relation
   object containing all the rows in relation that meet the condition established
   in expression, which can be any Clojure expression. Any keyword used as part
   of expression must refer to an attribute in relation."
   [expression relation]
-  (.Relation [] []))
+  (Relation. '() '()))
 
 (deftest test-convert
   (is
@@ -171,5 +181,14 @@
   (is (= 3 (widest '("id" 1 2 12 20 300 22 111)))) ; 3 = 300 or 111
   (is (= 16 (widest '("Gwen Stacy" "Natalia Romanova" "Tony Stark" "Peggy Carter"
                             "Peter Parker" "Pepper Potts")))))
+(deftest test-find
+  (do
+    (def a '(199 "Gwen Stacy" 18))
+    (def b '(598 "MaryJane Watson" 18))
+    (def s1 (relation :students1))
+    (def s2 (relation :students2))
+    (is (= a (find a (.rows s1))))
+    (is (= nil (find a (.rows s2))))
+    (is (= nil (find b (.rows s1))))))
 
 (run-tests)
