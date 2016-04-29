@@ -20,3 +20,10 @@
             (conso h t lst)
             (reverseo t x)
             (appendo x [h] result)])))
+
+(defne lasto
+  [lst result]
+  ([[h] h])
+  ([[h . t] result]
+   (!= t [])
+   (lasto t result)))
