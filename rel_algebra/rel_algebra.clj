@@ -120,6 +120,15 @@
   (->>
     (read-csv (str (name file-name) ".csv"))
     create-record))
+(defn union
+  "Returns a new relation object that contains all the rows in relation-a and relation-b."
+  [relation-a relation-b]
+  ; TODO Check UNION COMPATIBLE
+  (let [rows-a (.rows relation-a)
+        rows-b (.rows relation-b)
+        header (.column-names rows-a)
+        rows   (distinct (concat rows-a rows-b))]
+    (Relation. header rows)))
 
 (deftest test-convert
   (is
