@@ -18,16 +18,17 @@
          select
          union)
 ; UTILS
-(declare widest)
-(defrecord Relation
-  [column-names rows])
+(declare widest str-relation)
 
-;; Override Java's Object.toString method. This allows using
-;; the 'str' function with Rectangle instances.
-;Object
-;(toString [this]
-;(declare str-rectangle) ; str-rectangle is declared later.
-;(str-rectangle this)))
+(defrecord Relation
+  [column-names rows]
+  Object
+  (toString [this]
+    (str-relation this)))
+(defmethod print-method Relation
+  [this w]
+  (print-simple (str this) w))
+
 (defn get-column
   "Get values for the specified column"
   [index data]
@@ -42,7 +43,7 @@
   (->>
     (map #(repeat (+ 2 %) "-") colSizes)
     (map str/join)
-    (str/join "+")
+    (str/join  "+")
     (wrap-with "+")))
 (defn format-value
   "Formats integer values right justified and other values left justified"
@@ -79,8 +80,7 @@
         colSizes  (map widest colValues) ; List with the sizes of each column
         border    (build-border colSizes) ; Horizontal border of the table
         fHeader   (build-header colSizes headers) ; Formatted header
-        fBody     (build-body colSizes rows)
-        ]
+        fBody     (build-body colSizes rows)]
     (str/join "\n" [border fHeader border fBody border])))
 
 
@@ -100,9 +100,9 @@
 (defn read-csv
   "Reads a CSV file and splits into lines"
   [filename]
-  (let [data (str/split-lines (slurp filename))
+  (let [data   (str/split-lines (slurp filename))
         header (first data)
-        rows (rest data)]
+        rows   (rest data)]
     (->>
       (map split rows)
       (map convert)
