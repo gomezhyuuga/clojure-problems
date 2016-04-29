@@ -13,12 +13,50 @@
 (defrecord Relation
   [column-names rows])
 
-  ;; Override Java's Object.toString method. This allows using
-  ;; the 'str' function with Rectangle instances.
-  ;Object
-  ;(toString [this]
-    ;(declare str-rectangle) ; str-rectangle is declared later.
-    ;(str-rectangle this)))
+;; Override Java's Object.toString method. This allows using
+;; the 'str' function with Rectangle instances.
+;Object
+;(toString [this]
+;(declare str-rectangle) ; str-rectangle is declared later.
+;(str-rectangle this)))
+(defn get-column
+  "Get values for the specified column"
+  [index data]
+  (map #(nth % index) data))
+(defn wrap-with
+  "Wraps a string in + sign"
+  [wrapper data]
+  (str wrapper data wrapper))
+(defn build-row
+  "Row formatted for a table"
+  [colSizes data]
+  (->>
+    (map-indexed #(format (str " %-" (nth colSizes %1) "s ") %2) data)
+    (str/join "|")
+    (wrap-with "|")))
+(defn build-header
+  "Creates a table header"
+  [headers colSizes]
+  (let [border (->>
+                 (map #(repeat (+ 2 %) "-") colSizes)
+                 (map str/join)
+                 (str/join "+")
+                 (wrap-with "+"))
+        colNames (build-row colSizes headers)]
+    (str/join "\n" [border colNames border])))
+
+(defn str-relation
+  "Creates a string representation of a Relation, i.e. a table"
+  [record]
+  (let [headers   (.column-names record) ; Column names
+        rows      (.rows record) ; Records for the table
+        nCols     (count headers) ; Number of columns
+        all       (cons headers rows) ; All the rows (inc headers) in a single list
+        colValues (map #(get-column % all) (range nCols)) ; List of column values
+        colSizes  (map widest colValues) ; List with the sizes of each column
+        ]
+    (build-header headers colSizes)))
+
 
 (defn create-record
   "Creates a relation record with attributes [column-names rows]"
