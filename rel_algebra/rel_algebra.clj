@@ -130,6 +130,38 @@
         rows   (distinct (concat rows-a rows-b))]
     (Relation. header rows)))
 
+(defn difference
+  "Returns a new relation object that contains the rows in relation-a that are not in relation-b."
+  [relation-a relation-b]
+  (.Relation [] []))
+(defn intersection
+  "Returns a new relation object that contains the rows in relation-a that are also in relation-b."
+  [relation-a relation-b]
+  (.Relation [] []))
+(defn product
+  "Returns a new relation object that contains the Cartesian product of relation-a times relation-b."
+  [relation-a relation-b]
+  (.Relation [] []))
+(defn project
+  "Returns a new relation object based on relation but only with the columns specified in attribute-
+  vector."
+  [attribute-vector relation]
+  (.Relation [] []))
+(defn rename
+  "Returns a new relation object which has the same rows as relation but with all its columns
+  renamed using the names contained in attribute-vector.
+  The attribute names must be unique keywords in attribute-vector. The number of attributes in
+  attribute-vector must be the same as the number of columns in relation."
+  [attribute-vector relation]
+  (.Relation [] []))
+(defmacro select
+  "This operation has to be implemented as a macro. It returns a new relation
+  object containing all the rows in relation that meet the condition established
+  in expression, which can be any Clojure expression. Any keyword used as part
+  of expression must refer to an attribute in relation."
+  [expression relation]
+  (.Relation [] []))
+
 (deftest test-convert
   (is
     (= '(1 3 "ok" "ok2" "2ok" "string" 2345)
