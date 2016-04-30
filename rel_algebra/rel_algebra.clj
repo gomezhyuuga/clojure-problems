@@ -199,6 +199,13 @@
   [attribute-vector relation]
   (Relation. (map name attribute-vector) (.rows relation)))
 
+(defn column-indices
+  [relation]
+  (let [headers (.column-names relation)]
+    (->>
+      (map-indexed #(vector %2 %1) headers)
+      flatten
+      (apply hash-map))))
 (defmacro select
   "This operation has to be implemented as a macro. It returns a new relation
   object containing all the rows in relation that meet the condition established
