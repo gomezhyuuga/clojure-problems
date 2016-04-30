@@ -191,7 +191,6 @@
 (defn union
   "Returns a new relation object that contains all the rows in relation-a and relation-b."
   [relation-a relation-b]
-
   (check-union-compatibility relation-a relation-b)
 
   (let [rows-a (.rows relation-a)
@@ -204,6 +203,8 @@
   "Returns a new relation object that contains the rows in relation-a that are
   not in relation-b."
   [relation-a relation-b]
+  (check-union-compatibility relation-a relation-b)
+
   (let [rows-a (.rows relation-a)
         rows-b (.rows relation-b)
         header (.column-names relation-a)
