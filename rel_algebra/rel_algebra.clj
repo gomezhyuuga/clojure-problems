@@ -4,10 +4,8 @@
 ; Author:
 ;          A01020319 Fernando Gómez Herrera
 ;----------------------------------------------------------
-
-(ns gh.rel-algebra
-  (:require [clojure.string :as str])
-  (:use clojure.test))
+(use '[clojure.string :only (join split-lines)]
+     '[clojure.test])
 
 (declare difference
          intersection
@@ -29,10 +27,36 @@
   [this w]
   (print-simple (str this) w))
 
+(defn replace-keyword
+  "Replaces keyword with an expression to get the value of that column."
+  [expression freplacer]
+  (loop [res () coll expression]
+    (let [f (first coll)
+          r (rest coll)]
+    (cond
+      (empty? coll) (reverse res)
+      (list? f)     (recur (cons (replace-keyword f freplacer) res) r)
+      (keyword? f)  (recur (cons (freplacer f) res) r)
+      :else         (recur (cons f res) r)))))
 (defn get-column
   "Get values for the specified column"
   [index data]
   (map #(nth % index) data))
+(defn column-indices
+  [headers]
+    (->>
+      (map-indexed #(vector %2 %1) headers)
+      flatten
+      (apply hash-map)))
+(defn column-value
+  [row column headers]
+  (let [indices (column-indices headers)
+        value   (nth row (indices (name column)))]
+    value))
+(defn check-record
+  [expression record headers]
+  (let [condition (replace-keyword expression #(column-value record % headers))]
+    (eval condition)))
 (defn find
   [el lst]
   "Finds an item inside a list. Returns the record if it exists, nil otherwise."
@@ -60,8 +84,8 @@
   [colSizes]
   (->>
     (map #(repeat (+ 2 %) "-") colSizes)
-    (map str/join)
-    (str/join  "+")
+    (map join)
+    (join  "+")
     (wrap-with "+")))
 (defn format-value
   "Formats integer values right justified and other values left justified"
@@ -74,7 +98,7 @@
   [colSizes data]
   (->>
     (map-indexed #(format-value %2 (nth colSizes %1)) data)
-    (str/join "|")
+    (join "|")
     (wrap-with "|")))
 (defn build-header
   "Creates a table header"
@@ -85,7 +109,7 @@
   [colSizes rows]
   (->>
     (map #(build-row colSizes %) rows)
-    (str/join "\n")))
+    (join "\n")))
 
 (defn str-relation
   "Creates a string representation of a Relation, i.e. a table"
@@ -99,8 +123,7 @@
         border    (build-border colSizes) ; Horizontal border of the table
         fHeader   (build-header colSizes headers) ; Formatted header
         fBody     (build-body colSizes rows)]
-    (str/join "\n" [border fHeader border fBody border])))
-
+    (join "\n" [border fHeader border fBody border])))
 
 (defn create-record
   "Creates a relation record with attributes [column-names rows]"
@@ -114,11 +137,11 @@
 (defn split
   "Split by commas"
   [s]
-  (str/split s #","))
+  (clojure.string/split s #","))
 (defn read-csv
   "Reads a CSV file and splits into lines"
   [filename]
-  (let [data   (str/split-lines (slurp filename))
+  (let [data   (split-lines (slurp filename))
         header (first data)
         rows   (rest data)]
     (->>
@@ -146,6 +169,7 @@
   (->>
     (read-csv (str (name file-name) ".csv"))
     create-record))
+
 (defn union
   "Returns a new relation object that contains all the rows in relation-a and relation-b."
   [relation-a relation-b]
@@ -165,6 +189,7 @@
         header (.column-names relation-a)
         rows   (filter #(not (find % rows-b)) rows-a)]
     (Relation. header rows)))
+
 (defn intersection
   "Returns a new relation object that contains the rows in relation-a that are
   also in relation-b."
@@ -201,21 +226,16 @@
   [attribute-vector relation]
   (Relation. (map name attribute-vector) (.rows relation)))
 
-(defn column-indices
-  [relation]
-  (let [headers (.column-names relation)]
-    (->>
-      (map-indexed #(vector %2 %1) headers)
-      flatten
-      (apply hash-map))))
 (defmacro select
   "This operation has to be implemented as a macro. It returns a new relation
   object containing all the rows in relation that meet the condition established
   in expression, which can be any Clojure expression. Any keyword used as part
   of expression must refer to an attribute in relation."
   [expression relation]
-  (Relation. '() '()))
-
+  `(let [headers# (.column-names ~relation)
+         rows# (filter #(check-record '~expression % (.column-names ~relation))
+                       (.rows ~relation))]
+         (Relation. headers# rows#)))
 
 (deftest test-convert
   (is
@@ -239,8 +259,8 @@
   (do
     (def s1 (relation :students1))
     (def p (relation :pizzas))
-    (is (= {"id" 0, "name" 1, "age" 2} (column-indices s1)))
-    (is (= {"size" 1, "flavor" 0} (column-indices p)))))
+    (is (= {"id" 0, "name" 1, "age" 2} (column-indices (.column-names s1))))
+    (is (= {"size" 1, "flavor" 0} (column-indices (.column-names p))))))
 
 (def s1 (relation :students1))
 (def s2 (relation :students2))
