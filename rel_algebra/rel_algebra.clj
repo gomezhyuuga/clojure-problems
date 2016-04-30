@@ -171,6 +171,12 @@
     (= (.column-names relation-a) (.column-names relation-b))
     (str "Both relations must be union-compatible (have the exact same
          attributes and in the same order)")))
+(defn check-every-is-keyword
+  "Validates that all the elements are keywords"
+  [v]
+  (check-argument
+    (every? keyword? attribute-vector)
+    (str "Every element in attribute-vector must be a keyword")))
 
 (defn relation
   "This factory function creates a new relation object, taking the data from a
@@ -241,9 +247,7 @@
   (check-argument
     (not (empty? attribute-vector))
     (str "First parameter attribute-vector can't be empty"))
-  (check-argument
-    (every? keyword? attribute-vector)
-    (str "Every element in attribute-vector must be a keyword"))
+  (check-every-is-keyword attribute-vector)
   (check-argument
     (= (count attribute-vector) (count (distinct attribute-vector)))
     (str "All elements in attribute-vector must be different"))
