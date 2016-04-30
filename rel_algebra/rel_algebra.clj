@@ -184,7 +184,11 @@
 (defn union
   "Returns a new relation object that contains all the rows in relation-a and relation-b."
   [relation-a relation-b]
-  ; TODO Check UNION COMPATIBLE
+  (check-argument
+    (= (.column-names relation-a) (.column-names relation-b))
+    (str "Both relations must be union-compatible (have the exact same
+         attributes and in the same order)"))
+
   (let [rows-a (.rows relation-a)
         rows-b (.rows relation-b)
         header (.column-names relation-a)
