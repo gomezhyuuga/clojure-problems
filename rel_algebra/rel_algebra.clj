@@ -173,10 +173,22 @@
          attributes and in the same order)")))
 (defn check-every-is-keyword
   "Validates that all the elements are keywords"
-  [v]
+  [param]
   (check-argument
-    (every? keyword? attribute-vector)
+    (every? keyword? param)
     (str "Every element in attribute-vector must be a keyword")))
+(defn check-for-vector
+  "Validates that the parameter is a vector"
+  [param]
+  (check-argument
+    (vector? param)
+    (str "The parameter must be a vector, not a" (class param))))
+(defn check-uniqueness
+  "Validates that all the elements in parameter are different"
+  [param]
+  (check-argument
+    (= (count param) (count (distinct param)))
+    (str "All elements in attribute-vector must be different")))
 
 (defn relation
   "This factory function creates a new relation object, taking the data from a
@@ -241,16 +253,12 @@
   "Returns a new relation object based on relation but only with the columns
   specified in attribute-vector."
   [attribute-vector relation]
-  (check-argument
-    (vector? attribute-vector)
-    (str "First parameter attribute-vector must be a vector, not a" (class attribute-vector)))
+  (check-for-vector attribute-vector)
   (check-argument
     (not (empty? attribute-vector))
     (str "First parameter attribute-vector can't be empty"))
   (check-every-is-keyword attribute-vector)
-  (check-argument
-    (= (count attribute-vector) (count (distinct attribute-vector)))
-    (str "All elements in attribute-vector must be different"))
+  (check-uniqueness attribute-vector)
   (check-argument
     (every? #(find % (.column-names relation)) (map name attribute-vector))
     (str "attribute-vector can't contain attributes that does not exist in the relation"))
@@ -267,6 +275,13 @@
   The attribute names must be unique keywords in attribute-vector. The number of attributes in
   attribute-vector must be the same as the number of columns in relation."
   [attribute-vector relation]
+  (check-every-is-keyword attribute-vector)
+  (check-for-vector attribute-vector)
+  (check-uniqueness attribute-vector)
+  (check-argument
+    (= (count attribute-vector) (count (.column-names relation)))
+    (str "There number of attributes must be the same as the relation's"))
+
   (Relation. (map name attribute-vector) (.rows relation)))
 
 (defmacro select
