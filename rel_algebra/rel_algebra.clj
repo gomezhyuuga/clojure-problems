@@ -136,7 +136,7 @@
   ; TODO Check UNION COMPATIBLE
   (let [rows-a (.rows relation-a)
         rows-b (.rows relation-b)
-        header (.column-names rows-a)
+        header (.column-names relation-a)
         rows   (distinct (concat rows-a rows-b))]
     (Relation. header rows)))
 
