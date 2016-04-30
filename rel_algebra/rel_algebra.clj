@@ -245,6 +245,10 @@
   "Returns a new relation object that contains the Cartesian product of
   relation-a times relation-b."
   [relation-a relation-b]
+  (check-argument
+    (every? #(not (find % (.column-names relation-a))) (.column-names relation-b))
+    (str "There can't be common attributes in both relations"))
+
   (let [header (concat (.column-names relation-a) (.column-names relation-b))
         rows   (reduce concat (map #(product-record % relation-b) (.rows relation-a)))]
     (Relation. header rows)))
