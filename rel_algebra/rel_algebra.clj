@@ -119,6 +119,10 @@
   (->>
     (map #(count (str %)) lst)
     (reduce max)))
+(defn product-record
+  "Product between a single record and a relation"
+  [record relation]
+  (map #(concat record %) (.rows relation)))
 
 (defn relation
   "This factory function creates a new relation object, taking the data from a table contained in a CSV file. The relation object must be an instance of a record (created with defrecord) or type (created with deftype). The parameter file-name must be a keyword naming a file with a .csv extension contained in the current directory."
@@ -156,7 +160,10 @@
 (defn product
   "Returns a new relation object that contains the Cartesian product of relation-a times relation-b."
   [relation-a relation-b]
-  (Relation. '() '()))
+  (let [header (concat (.column-names relation-a) (.column-names relation-b))
+        rows   (reduce concat (map #(product-record % relation-b) (.rows relation-a)))]
+    (Relation. header rows)))
+
 (defn project
   "Returns a new relation object based on relation but only with the columns specified in attribute-
   vector."
