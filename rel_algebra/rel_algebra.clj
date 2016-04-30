@@ -39,6 +39,18 @@
   (->>
     (drop-while #(not= el %) lst)
     first))
+(defn find-index
+  [el lst]
+  "Finds an item inside a list. Returns the index of the item"
+  (->>
+    (map-indexed #(vector %1 %2) lst)
+    (drop-while (fn [[_ v]] (not= v el)))
+    first
+    first))
+(defn nths
+  [lst indexes]
+  (map #(nth lst %) indexes))
+
 (defn wrap-with
   "Wraps a string in + sign"
   [wrapper data]
