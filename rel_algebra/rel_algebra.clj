@@ -235,6 +235,22 @@
   "Returns a new relation object based on relation but only with the columns
   specified in attribute-vector."
   [attribute-vector relation]
+  (check-argument
+    (vector? attribute-vector)
+    (str "First parameter attribute-vector must be a vector, not a" (class attribute-vector)))
+  (check-argument
+    (not (empty? attribute-vector))
+    (str "First parameter attribute-vector can't be empty"))
+  (check-argument
+    (every? keyword? attribute-vector)
+    (str "Every element in attribute-vector must be a keyword"))
+  (check-argument
+    (= (count attribute-vector) (count (distinct attribute-vector)))
+    (str "All elements in attribute-vector must be different"))
+  (check-argument
+    (every? #(find % (.column-names relation)) (map name attribute-vector))
+    (str "attribute-vector can't contain attributes that does not exist in the relation"))
+
   (let [header  (.column-names relation)
         columns (map name attribute-vector)
         colNums (map #(find-index % header) columns)
