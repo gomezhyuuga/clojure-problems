@@ -26,6 +26,12 @@
 (defmethod print-method Relation
   [this w]
   (print-simple (str this) w))
+(defn check-argument
+  "Check if condition is true. If not, throw an
+  IllegalArgumentException with the given error-message."
+  [condition error-message]
+  (when (not condition)
+    (throw (IllegalArgumentException. error-message))))
 
 (defn replace-keyword
   "Replaces keyword with an expression to get the value of that column."
@@ -166,6 +172,11 @@
   file-name must be a keyword naming a file with a .csv extension contained in
   the current directory."
   [file-name]
+
+  (check-argument
+    (keyword? file-name)
+    (str "Parameter" file-name "must be a keyword, not a" (class file-name)))
+
   (->>
     (read-csv (str (name file-name) ".csv"))
     create-record))
