@@ -189,6 +189,12 @@
   (check-argument
     (= (count param) (count (distinct param)))
     (str "All elements in attribute-vector must be different")))
+(defn check-valid-keywords
+  "Validates that all keywords belongs to attributes in relation"
+  [keywords relation]
+  (check-argument
+    (every? #(find % (.column-names relation)) (map name keywords))
+    (str "All keywords in expression must refer to an attribute in relation")))
 
 (defn relation
   "This factory function creates a new relation object, taking the data from a
@@ -295,6 +301,11 @@
   of expression must refer to an attribute in relation."
   [expression relation]
   `(let [headers# (.column-names ~relation)
+         keywords# (->>
+                    (flatten '~expression)
+                    (filter keyword?)
+                    (map name))
+         valid# (check-valid-keywords keywords# ~relation)
          rows# (filter #(check-record '~expression % (.column-names ~relation))
                        (.rows ~relation))]
          (Relation. headers# rows#)))
