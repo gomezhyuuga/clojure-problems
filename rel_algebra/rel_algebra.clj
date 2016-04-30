@@ -192,13 +192,15 @@
         colNums (map #(find-index % header) columns)
         rows    (map #(nths % colNums) (.rows relation))]
     (Relation. columns rows)))
+
 (defn rename
   "Returns a new relation object which has the same rows as relation but with all its columns
   renamed using the names contained in attribute-vector.
   The attribute names must be unique keywords in attribute-vector. The number of attributes in
   attribute-vector must be the same as the number of columns in relation."
   [attribute-vector relation]
-  (Relation. '() '()))
+  (Relation. (map name attribute-vector) (.rows relation)))
+
 (defmacro select
   "This operation has to be implemented as a macro. It returns a new relation
   object containing all the rows in relation that meet the condition established
