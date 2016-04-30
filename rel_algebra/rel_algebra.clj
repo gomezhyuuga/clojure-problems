@@ -164,6 +164,13 @@
   "Product between a single record and a relation"
   [record relation]
   (map #(concat record %) (.rows relation)))
+(defn check-union-compatibility
+  "Checks if two relations are union-compatible"
+  [relation-a relation-b]
+  (check-argument
+    (= (.column-names relation-a) (.column-names relation-b))
+    (str "Both relations must be union-compatible (have the exact same
+         attributes and in the same order)")))
 
 (defn relation
   "This factory function creates a new relation object, taking the data from a
@@ -184,10 +191,8 @@
 (defn union
   "Returns a new relation object that contains all the rows in relation-a and relation-b."
   [relation-a relation-b]
-  (check-argument
-    (= (.column-names relation-a) (.column-names relation-b))
-    (str "Both relations must be union-compatible (have the exact same
-         attributes and in the same order)"))
+
+  (check-union-compatibility relation-a relation-b)
 
   (let [rows-a (.rows relation-a)
         rows-b (.rows relation-b)
