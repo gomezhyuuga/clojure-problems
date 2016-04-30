@@ -125,7 +125,11 @@
   (map #(concat record %) (.rows relation)))
 
 (defn relation
-  "This factory function creates a new relation object, taking the data from a table contained in a CSV file. The relation object must be an instance of a record (created with defrecord) or type (created with deftype). The parameter file-name must be a keyword naming a file with a .csv extension contained in the current directory."
+  "This factory function creates a new relation object, taking the data from a
+  table contained in a CSV file. The relation object must be an instance of a
+  record (created with defrecord) or type (created with deftype). The parameter
+  file-name must be a keyword naming a file with a .csv extension contained in
+  the current directory."
   [file-name]
   (->>
     (read-csv (str (name file-name) ".csv"))
@@ -141,7 +145,8 @@
     (Relation. header rows)))
 
 (defn difference
-  "Returns a new relation object that contains the rows in relation-a that are not in relation-b."
+  "Returns a new relation object that contains the rows in relation-a that are
+  not in relation-b."
   [relation-a relation-b]
   (let [rows-a (.rows relation-a)
         rows-b (.rows relation-b)
@@ -149,7 +154,8 @@
         rows   (filter #(not (find % rows-b)) rows-a)]
     (Relation. header rows)))
 (defn intersection
-  "Returns a new relation object that contains the rows in relation-a that are also in relation-b."
+  "Returns a new relation object that contains the rows in relation-a that are
+  also in relation-b."
   [relation-a relation-b]
   (let [rows-a (.rows relation-a)
         rows-b (.rows relation-b)
@@ -158,7 +164,8 @@
     (Relation. header rows)))
 
 (defn product
-  "Returns a new relation object that contains the Cartesian product of relation-a times relation-b."
+  "Returns a new relation object that contains the Cartesian product of
+  relation-a times relation-b."
   [relation-a relation-b]
   (let [header (concat (.column-names relation-a) (.column-names relation-b))
         rows   (reduce concat (map #(product-record % relation-b) (.rows relation-a)))]
