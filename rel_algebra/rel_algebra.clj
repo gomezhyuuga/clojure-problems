@@ -184,10 +184,14 @@
     (Relation. header rows)))
 
 (defn project
-  "Returns a new relation object based on relation but only with the columns specified in attribute-
-  vector."
+  "Returns a new relation object based on relation but only with the columns
+  specified in attribute-vector."
   [attribute-vector relation]
-  (Relation. '() '()))
+  (let [header  (.column-names relation)
+        columns (map name attribute-vector)
+        colNums (map #(find-index % header) columns)
+        rows    (map #(nths % colNums) (.rows relation))]
+    (Relation. columns rows)))
 (defn rename
   "Returns a new relation object which has the same rows as relation but with all its columns
   renamed using the names contained in attribute-vector.
