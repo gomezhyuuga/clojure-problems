@@ -215,6 +215,8 @@
   "Returns a new relation object that contains the rows in relation-a that are
   also in relation-b."
   [relation-a relation-b]
+  (check-union-compatibility relation-a relation-b)
+
   (let [rows-a (.rows relation-a)
         rows-b (.rows relation-b)
         header (.column-names relation-a)
