@@ -308,15 +308,12 @@
   in expression, which can be any Clojure expression. Any keyword used as part
   of expression must refer to an attribute in relation."
   [expression relation]
-  `(let [headers# (.column-names ~relation)
-         keywords# (->>
-                    (flatten '~expression)
-                    (filter keyword?)
-                    (map name))
-         valid# (check-valid-keywords keywords# ~relation)
-         rows# (filter #(check-record '~expression % (.column-names ~relation))
-                       (.rows ~relation))]
-         (Relation. headers# rows#)))
+  `(let [headers#  (.column-names ~relation)
+         rows#     (.rows ~relation)
+         keywords# (get-keywords '~expression)
+         valid#    (check-valid-keywords keywords# ~relation)
+         data#     (filter #(eval (check-record '~expression % headers#)) rows#)]
+    (Relation. headers# data#)))
 
 (deftest test-convert
   (is
