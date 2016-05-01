@@ -294,6 +294,14 @@
 
   (Relation. (map name attribute-vector) (.rows relation)))
 
+(defn get-keywords
+  "Returns a list with all the keywords inside a list"
+  [lst]
+  (->>
+    (flatten '~expression)
+    (filter keyword?)
+    (map name)))
+
 (defmacro select
   "This operation has to be implemented as a macro. It returns a new relation
   object containing all the rows in relation that meet the condition established
