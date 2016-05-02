@@ -80,6 +80,7 @@
   "This logic function succeeds when all digits contained in lst are converted
   to their corresponding keywords giving result."
   [lst result]
+  ([[] []] succeed)
   ([[h] _]
    (fresh [c]
           (converto h c)
