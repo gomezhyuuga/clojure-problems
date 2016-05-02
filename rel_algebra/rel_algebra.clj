@@ -192,7 +192,7 @@
   "Validates that all keywords belongs to attributes in relation"
   [keywords relation]
   (check-argument
-    (every? #(find % (.column-names relation)) (map name keywords))
+    (every? #(find % (.column-names relation)) keywords)
     (str "All keywords in expression must refer to an attribute in relation")))
 
 (defn relation
@@ -297,7 +297,7 @@
   "Returns a list with all the keywords inside a list"
   [lst]
   (->>
-    (flatten '~expression)
+    (flatten lst)
     (filter keyword?)
     (map name)))
 
@@ -847,4 +847,4 @@
                   (intersection
                     (students-by-course "Compiler Design")
                     (students-by-course "Software Design and Architecture"))))))))
-;(run-tests)
+(run-tests)
