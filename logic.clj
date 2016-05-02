@@ -76,6 +76,19 @@
   ([8 :eight] succeed)
   ([9 :nine] succeed)
   ([_ _] fail))
+(defne translateo
+  "This logic function succeeds when all digits contained in lst are converted
+  to their corresponding keywords giving result."
+  [lst result]
+  ([[h] _]
+   (fresh [c]
+          (converto h c)
+          (== result [c])))
+  ([[h . t] _]
+    (fresh [tmp c]
+       (translateo t tmp)
+       (converto h c)
+       (appendo [c] tmp result))))
 
 (deftest test-removeo
   (is (= [[:b :c :d :e]]
@@ -199,5 +212,18 @@
               (converto q1 :one)
               (converto 2 q2)
               (converto q3 :three)))))
+(deftest test-translateo
+  (is (= [:yes]
+         (run 1 [q] (translateo [1 2 3] [:one :two :three]) (== q :yes))))
+  (is (= []
+         (run 1 [q] (translateo [1 2 3] [:one :two :four]) (== q :yes))))
+  (is (= [:three]
+         (run 1 [q] (translateo [1 2 3] [:one :two q]))))
+  (is (= [[:four :five :six :seven :eight :nine]]
+         (run 1 [q] (translateo [4 5 6 7 8 9] q))))
+  (is (= [[1 2 0]]
+         (run 1 [q] (translateo q [:one :two :zero]))))
+  (is (= [[[] []]]
+         (run 1 [q1 q2] (translateo q1 q2)))))
 
 (run-tests)
