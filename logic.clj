@@ -7,12 +7,6 @@
 (use '[clojure.core.logic :rename {is logic-is}])
 (use 'clojure.test)
 
-(defn remove
-  [x lst]
-  (cond
-    (= x (first lst)) (rest lst)
-    :else (cons (first lst) (remove x (rest lst)))))
-
 (defne removeo
   "This logic function succeeds if it’s able to remove the first occurrence of
   x from lst giving result."
@@ -28,7 +22,6 @@
   elements in lst is even or odd, respectively."
   [lst]
   ([ [] ]  succeed)
-  ([ [h] ] fail)
   ([ [h . t] ]
    (odd-sizeo t)))
 (defne odd-sizeo
@@ -36,7 +29,6 @@
   in lst is even or odd, respectively."
   [lst]
   ([ [] ]  fail)
-  ([ [h] ] succeed)
   ([ [h . t] ]
    (even-sizeo t)))
 
@@ -90,6 +82,20 @@
        (translateo t tmp)
        (converto h c)
        (appendo [c] tmp result))))
+(defne splito
+  "This logic function succeeds when splitting lst gives a and b. The first,
+  third, fifth, etc. elements of lst go to a, while the second, fourth, sixth,
+  etc. elements go to b."
+  [lst a b]
+  ([[h k] a b] (== a [h]) (== b [k]))
+  ([[h] a b]   (== a [h]) (== b []))
+  ([[] a b]    (== a [ ]) (== b []))
+  ([ [h . t] a b ]
+   (fresh [tt h2 r1 r2 tmp1 tmp2]
+     (conso tt h2 t)
+     (splito h2 r1 r2)
+     (appendo [h] r1 a)
+     (appendo [tt] r2 b))))
 
 (deftest test-removeo
   (is (= [[:b :c :d :e]]
@@ -226,5 +232,36 @@
          (run 1 [q] (translateo q [:one :two :zero]))))
   (is (= [[[] []]]
          (run 1 [q1 q2] (translateo q1 q2)))))
+(deftest test-splito
+  (is (= [:yes]
+         (run 1 [q] (splito [] [] []) (== q :yes))))
+  (is (= [:yes]
+         (run 1 [q] (splito [:a] [:a] []) (== q :yes))))
+  (is (= [:yes]
+         (run 1 [q] (splito [:a :b] [:a] [:b]) (== q :yes))))
+  (is (= [:yes]
+         (run 1 [q]
+           (splito [:a :b :c :d :e :f]
+                   [:a :c :e]
+                   [:b :d :f])
+           (== q :yes))))
+  (is (= [:yes]
+         (run 1 [q]
+           (splito [:a :b :c :d :e :f :g]
+                   [:a :c :e :g]
+                   [:b :d :f])
+           (== q :yes))))
+  (is (= [[[:a :c :e] [:b :d :f]]]
+         (run 1 [q1 q2] (splito [:a :b :c :d :e :f] q1 q2))))
+  (is (= [[:a :b :c :d :e :f :g]]
+         (run 1 [q] (splito q [:a :c :e :g] [:b :d :f]))))
+  (is (= '[[[] [] []]
+           [[_0] [_0] []]
+           [[_0 _1] [_0] [_1]]
+           [[_0 _1 _2] [_0 _2] [_1]]
+           [[_0 _1 _2 _3] [_0 _2] [_1 _3]]
+           [[_0 _1 _2 _3 _4] [_0 _2 _4] [_1 _3]]
+           [[_0 _1 _2 _3 _4 _5] [_0 _2 _4] [_1 _3 _5]]]
+         (run 7 [q1 q2 q3] (splito q1 q2 q3)))))
 
 (run-tests)
