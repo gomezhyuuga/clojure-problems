@@ -61,6 +61,21 @@
   [lst result]
   ([[h . t] _]
    (appendo t [h] result)))
+(defne converto
+  "This logic function succeeds when digit d corresponds to the keyword k (for
+  example digit 7 with keyword :seven)."
+  [d k]
+  ([0 :zero] succeed)
+  ([1 :one] succeed)
+  ([2 :two] succeed)
+  ([3 :three] succeed)
+  ([4 :four] succeed)
+  ([5 :five] succeed)
+  ([6 :six] succeed)
+  ([7 :seven] succeed)
+  ([8 :eight] succeed)
+  ([9 :nine] succeed)
+  ([_ _] fail))
 
 (deftest test-removeo
   (is (= [[:b :c :d :e]]
@@ -131,14 +146,14 @@
 (deftest test-rotateo
   (is (= [:yes]
          (run 1 [q]
-           (rotateo [:a :b :c :d :e]
-                    [:b :c :d :e :a])
-           (== q :yes))))
+              (rotateo [:a :b :c :d :e]
+                       [:b :c :d :e :a])
+              (== q :yes))))
   (is (= []
          (run 1 [q]
-           (rotateo [:a :b :c :d :e]
-                    [:a :b :c :d :e])
-           (== q :yes))))
+              (rotateo [:a :b :c :d :e]
+                       [:a :b :c :d :e])
+              (== q :yes))))
   (is (= []
          (run 1 [q] (rotateo [] q))))
   (is (= [[:a]]
@@ -155,5 +170,34 @@
            [[_0 _1 _2 _3 _4 _5] [_1 _2 _3 _4 _5 _0]]
            [[_0 _1 _2 _3 _4 _5 _6] [_1 _2 _3 _4 _5 _6 _0]]]
          (run 7 [q1 q2] (rotateo q1 q2)))))
+(deftest test-converto
+  (is (= [:yes]
+         (run 1 [q] (converto 0 :zero) (== q :yes))))
+  (is (= [:yes]
+         (run 1 [q]
+              (converto 0 :zero)
+              (converto 1 :one)
+              (converto 2 :two)
+              (converto 3 :three)
+              (converto 4 :four)
+              (converto 5 :five)
+              (converto 6 :six)
+              (converto 7 :seven)
+              (converto 8 :eight)
+              (converto 9 :nine)
+              (== q :yes))))
+  (is (= []
+         (run 1 [q] (converto 2 :one) (== q :yes))))
+  (is (= []
+         (run 1 [q] (converto 12 :twelve) (== q :yes))))
+  (is (= [7]
+         (run 1 [q] (converto q :seven))))
+  (is (= [:seven]
+         (run 1 [q] (converto 7 q))))
+  (is (= [[1 :two 3]]
+         (run 1 [q1 q2 q3]
+              (converto q1 :one)
+              (converto 2 q2)
+              (converto q3 :three)))))
 
-  (run-tests)
+(run-tests)
