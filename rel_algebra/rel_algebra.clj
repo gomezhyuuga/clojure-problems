@@ -61,8 +61,7 @@
     value))
 (defn check-record
   [expression record headers]
-  (let [condition (replace-keyword expression #(column-value record % headers))]
-    (eval condition)))
+  (replace-keyword expression #(column-value record % headers)))
 (defn find
   [el lst]
   "Finds an item inside a list. Returns the record if it exists, nil otherwise."
@@ -848,4 +847,4 @@
                   (intersection
                     (students-by-course "Compiler Design")
                     (students-by-course "Software Design and Architecture"))))))))
-(run-tests)
+;(run-tests)
