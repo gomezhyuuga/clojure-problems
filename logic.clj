@@ -3,6 +3,7 @@
 ; Date: May 2, 2016.
 ; Authors:
 ;          A01020319 Fernando Gómez Herrera
+;          A01169701 Rodolfo Andrés Ramírez Valenzuela
 ;----------------------------------------------------------
 (use '[clojure.core.logic :rename {is logic-is}])
 (use 'clojure.test)
