@@ -55,6 +55,12 @@
    (fresh [tmp]
           (reverseo lst tmp)
           (== tmp lst))))
+(defne rotateo
+  "This logic function succeeds when lst is rotated left one position giving
+  result. In other words, the first element of lst becomes the last element of result."
+  [lst result]
+  ([[h . t] _]
+   (appendo t [h] result)))
 
 (deftest test-removeo
   (is (= [[:b :c :d :e]]
@@ -122,5 +128,32 @@
            [_0 _1 _2 _1 _0]
            [_0 _1 _2 _2 _1 _0]]
          (run 7 [q] (palindromeo q)))))
+(deftest test-rotateo
+  (is (= [:yes]
+         (run 1 [q]
+           (rotateo [:a :b :c :d :e]
+                    [:b :c :d :e :a])
+           (== q :yes))))
+  (is (= []
+         (run 1 [q]
+           (rotateo [:a :b :c :d :e]
+                    [:a :b :c :d :e])
+           (== q :yes))))
+  (is (= []
+         (run 1 [q] (rotateo [] q))))
+  (is (= [[:a]]
+         (run 1 [q] (rotateo [:a] q))))
+  (is (= [[:b :c :d :e :a]]
+         (run 1 [q] (rotateo [:a :b :c :d :e] q))))
+  (is (= [[:e :a :b :c :d]]
+         (run 1 [q] (rotateo q [:a :b :c :d :e]))))
+  (is (= '[[[_0] [_0]]
+           [[_0 _1] [_1 _0]]
+           [[_0 _1 _2] [_1 _2 _0]]
+           [[_0 _1 _2 _3] [_1 _2 _3 _0]]
+           [[_0 _1 _2 _3 _4] [_1 _2 _3 _4 _0]]
+           [[_0 _1 _2 _3 _4 _5] [_1 _2 _3 _4 _5 _0]]
+           [[_0 _1 _2 _3 _4 _5 _6] [_1 _2 _3 _4 _5 _6 _0]]]
+         (run 7 [q1 q2] (rotateo q1 q2)))))
 
   (run-tests)
