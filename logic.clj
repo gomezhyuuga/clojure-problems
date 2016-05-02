@@ -87,9 +87,8 @@
   third, fifth, etc. elements of lst go to a, while the second, fourth, sixth,
   etc. elements go to b."
   [lst a b]
-  ([[h k] a b] (== a [h]) (== b [k]))
-  ([[h] a b]   (== a [h]) (== b []))
   ([[] a b]    (== a [ ]) (== b []))
+  ([[h] a b]   (== a [h]) (== b []))
   ([ [h . t] a b ]
    (fresh [tt h2 r1 r2 tmp1 tmp2]
      (conso tt h2 t)
